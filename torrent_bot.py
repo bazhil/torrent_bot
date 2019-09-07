@@ -16,22 +16,6 @@ dict = 'categories_dict.json'
 CATEGORY = ''
 SUBCATEGORY = ''
 
-def gen_categories_keyboard():
-    """
-    Function, which generate menu with categories
-    :return: keyboard
-    """
-    keyboard = InlineKeyboardMarkup()
-
-    keyboard.row_width = 2
-
-    j = 0
-    with open(dict, 'r', encoding='utf-8') as dictionary:
-        d = json.load(dictionary)
-    for i in d:
-        j += 1
-        keyboard.add(InlineKeyboardButton(text=i, callback_data=str(j)))
-    return keyboard
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
@@ -42,8 +26,8 @@ def callback_query(call):
     """
     global CATEGORY
     if call.data == '1':
-        bot.answer_callback_query(call.id, 'Выбрана категория Rutracker Awards (мероприятия и конкурсы)')
         CATEGORY = 'Rutracker Awards (мероприятия и конкурсы)'
+        bot.answer_callback_query(call.id, 'Выбрана категория {}'.format(CATEGORY))
     elif call.data == '2':
         bot.answer_callback_query(call.id, 'Выбрана категория Зарубежное кино')
         CATEGORY = 'Зарубежное кино'
@@ -398,9 +382,46 @@ def callback_query(call):
 
 @bot.message_handler(func=lambda message: True)
 def message_handler(message):
-    bot.send_message(message.chat.id, "Выберете категорию в которой следует производить поиск", reply_markup=gen_categories_keyboard())
+    bot.send_message(message.chat.id, "Выберете категорию в которой следует производить поиск",
+                     reply_markup=gen_categories_keyboard())
+
+def gen_categories_keyboard():
+    """
+    Function, which generate menu with categories
+    :return: keyboard
+    """
+    keyboard = InlineKeyboardMarkup()
+
+    keyboard.row_width = 1
+
+    j = 0
+    with open(dict, 'r', encoding='utf-8') as dictionary:
+        d = json.load(dictionary)
+    for i in d:
+        j += 1
+        keyboard.add(InlineKeyboardButton(text=i, callback_data=str(j)))
+    return keyboard
 
 
+def gen_subcategory_keyboard():
+    """
+    Function, which generate menu with subcategories
+    :param
+    :return: keyboard:
+    """
+    keyboard = InlineKeyboardMarkup()
+
+    keyboard.row_width = 1
+
+    j = 200
+    with open(dict, 'r', encoding='utf-8') as dictionary:
+        d = json.load(dictionary)
+    for i in d[CATEGORY]:
+        if len(d[CATEGORY]) == 0:
+            break
+        j += 1
+        keyboard.add(InlineKeyboardButton(text=i, callback_data=str(j)))
+    return keyboard
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
