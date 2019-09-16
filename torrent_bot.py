@@ -12,7 +12,7 @@ from pprint import pprint
 bot = telebot.TeleBot(config.token)
 
 
-dict = 'categories_dict.json'
+cat_dict = 'categories_dict.json'
 
 CATEGORY = None
 SUBCATEGORY = None
@@ -21,7 +21,7 @@ isRunning = False
 
 
 @bot.callback_query_handler(func=lambda call: True)
-def callback_query(call):
+def category_query(call):
     """
     Function - handler of choosing caterory.
     :param call:
@@ -29,7 +29,7 @@ def callback_query(call):
     """
     global CATEGORY
     category_choose_text = """Перенаправляю вас на выбор категории. Обратите внимание, что всего 117 категорий, \
-    но за 1 раз вам будет вывеено только 58. На остальные категории вы сможете переключиться внутри меню выбора. \
+    но за 1 раз вам будет выведено только 58. На остальные категории вы сможете переключиться внутри меню выбора. \
     Если оно не выводится, вы можете вызвать его с помощью команд /categories58 и /categories117"""
     if call.data == 'Выбор категории 1-58':
         send = bot.send_message(call.from_user.id, category_choose_text)
@@ -37,360 +37,482 @@ def callback_query(call):
     elif call.data == 'Выбор категории 59-117':
         send = bot.send_message(call.from_user.id, category_choose_text)
         bot.register_next_step_handler(send, second_categories(call))
+    elif call.data == 'm':
+        send = bot.send_message(call.from_user.id, 'Возврат в стартовое меню')
+        bot.register_next_step_handler(send, start(call))
     elif call.data == '0':
         CATEGORY = 'Rutracker Awards (мероприятия и конкурсы)'
         send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
         bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '1':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зарубежное кино')
         CATEGORY = 'Зарубежное кино'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '2':
-        bot.answer_callback_query(call.id, 'Выбрана категория Наше кино')
         CATEGORY = 'Наше кино'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '3':
-        bot.answer_callback_query(call.id, 'Выбрана категория Арт-хаус и авторское кино')
         CATEGORY = 'Арт-хаус и авторское кино'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '4':
-        bot.answer_callback_query(call.id, 'Выбрана категория Театр')
         CATEGORY = 'Театр'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '5':
-        bot.answer_callback_query(call.id, 'Выбрана категория DVD Video')
         CATEGORY = 'DVD Video'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '6':
-        bot.answer_callback_query(call.id, 'Выбрана категория HD Video')
         CATEGORY = 'HD Video'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '7':
-        bot.answer_callback_query(call.id, 'Выбрана категория 3D/Стерео Кино, Видео, TV и Спорт')
         CATEGORY = '3D/Стерео Кино, Видео, TV и Спорт'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '8':
-        bot.answer_callback_query(call.id, 'Выбрана категория Мультфильмы')
         CATEGORY = 'Мультфильмы'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '9':
-        bot.answer_callback_query(call.id, 'Выбрана категория Мультсериалы')
         CATEGORY = 'Мультсериалы'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '10':
-        bot.answer_callback_query(call.id, 'Выбрана категория Аниме')
         CATEGORY = 'Аниме'
-    elif call.data == '10':
-        bot.answer_callback_query(call.id, 'Выбрана категория Русские сериалы')
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
+    elif call.data == '11':
         CATEGORY = 'Русские сериалы'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '12':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зарубежные сериалы')
         CATEGORY = 'Зарубежные сериалы'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '13':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зарубежные сериалы (HD Video)')
         CATEGORY = 'Зарубежные сериалы (HD Video)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '14':
-        bot.answer_callback_query(call.id, 'Выбрана категория Сериалы Латинской Америки, Турции и Индии')
         CATEGORY = 'Сериалы Латинской Америки, Турции и Индии'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '15':
-        bot.answer_callback_query(call.id, 'Выбрана категория Азиатские сериалы')
         CATEGORY = 'Азиатские сериалы'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '16':
-        bot.answer_callback_query(call.id, 'Выбрана категория Вера и религия')
         CATEGORY = 'Вера и религия'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '17':
-        bot.answer_callback_query(call.id, 'Выбрана категория Документальные фильмы и телепередачи')
         CATEGORY = 'Документальные фильмы и телепередачи'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '18':
-        bot.answer_callback_query(call.id, 'Выбрана категория Документальные (HD Video)')
         CATEGORY = 'Документальные (HD Video)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '19':
-        bot.answer_callback_query(call.id, 'Выбрана категория Развлекательные телепередачи и шоу, приколы и юмор')
         CATEGORY = 'Развлекательные телепередачи и шоу, приколы и юмор'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '20':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зимние Олимпийские игры 2018')
         CATEGORY = 'Зимние Олимпийские игры 2018'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '21':
-        bot.answer_callback_query(call.id, 'Выбрана категория Спортивные турниры, фильмы и передачи')
         CATEGORY = 'Спортивные турниры, фильмы и передачи'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '22':
-        bot.answer_callback_query(call.id, 'Выбрана категория ⚽ Футбол')
         CATEGORY = '⚽ Футбол'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '23':
-        bot.answer_callback_query(call.id, 'Выбрана категория 🏀 Баскетбол')
         CATEGORY = '🏀 Баскетбол'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '244':
-        bot.answer_callback_query(call.id, 'Выбрана категория 🏒 Хоккей')
         CATEGORY = '🏒 Хоккей'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '25':
-        bot.answer_callback_query(call.id, 'Выбрана категория Рестлинг')
         CATEGORY = 'Рестлинг'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '26':
-        bot.answer_callback_query(call.id, 'Выбрана категория Сканирование, обработка сканов')
         CATEGORY = 'Сканирование, обработка сканов'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '27':
-        bot.answer_callback_query(call.id, 'Выбрана категория Книги и журналы (общий раздел)')
         CATEGORY = 'Книги и журналы (общий раздел)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '28':
-        bot.answer_callback_query(call.id, 'Выбрана категория Для детей, родителей и учителей')
         CATEGORY = 'Для детей, родителей и учителей'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '29':
-        bot.answer_callback_query(call.id, 'Выбрана категория Спорт, физическая культура, боевые искусства')
         CATEGORY = 'Спорт, физическая культура, боевые искусства'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '30':
-        bot.answer_callback_query(call.id, 'Выбрана категория Гуманитарные науки')
         CATEGORY = 'Гуманитарные науки'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '31':
-        bot.answer_callback_query(call.id, 'Выбрана категория Исторические науки')
         CATEGORY = 'Исторические науки'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '32':
-        bot.answer_callback_query(call.id, 'Выбрана категория Точные, естественные и инженерные науки')
         CATEGORY = 'Точные, естественные и инженерные науки'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '33':
-        bot.answer_callback_query(call.id, 'Выбрана категория Ноты и Музыкальная литература')
         CATEGORY = 'Ноты и Музыкальная литература'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '34':
-        bot.answer_callback_query(call.id, 'Выбрана категория Военное дело')
         CATEGORY = 'Военное дело'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '35':
-        bot.answer_callback_query(call.id, 'Выбрана категория Психология')
         CATEGORY = 'Психология'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '36':
-        bot.answer_callback_query(call.id, 'Выбрана категория Коллекционирование, увлечения и хобби')
         CATEGORY = 'Коллекционирование, увлечения и хобби'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '37':
-        bot.answer_callback_query(call.id, 'Выбрана категория Художественная литература')
         CATEGORY = 'Художественная литература'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '38':
-        bot.answer_callback_query(call.id, 'Выбрана категория Компьютерная литература')
         CATEGORY = 'Компьютерная литература'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '39':
-        bot.answer_callback_query(call.id, 'Выбрана категория Комиксы, манга, ранобэ')
         CATEGORY = 'Комиксы, манга, ранобэ'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '40':
-        bot.answer_callback_query(call.id, 'Выбрана категория Коллекции книг и библиотеки')
         CATEGORY = 'Коллекции книг и библиотеки'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '41':
-        bot.answer_callback_query(call.id, 'Выбрана категория Мультимедийные и интерактивные издания')
         CATEGORY = 'Мультимедийные и интерактивные издания'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '42':
-        bot.answer_callback_query(call.id, 'Выбрана категория Медицина и здоровье')
         CATEGORY = 'Медицина и здоровье'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '43':
-        bot.answer_callback_query(call.id, 'Выбрана категория Иностранные языки для взрослых')
         CATEGORY = 'Иностранные языки для взрослых'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '44':
-        bot.answer_callback_query(call.id, 'Выбрана категория Иностранные языки для детей')
         CATEGORY = 'Иностранные языки для детей'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '45':
-        bot.answer_callback_query(call.id, 'Выбрана категория Художественная литература (ин.языки)')
         CATEGORY = 'Художественная литература (ин.языки)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '46':
-        bot.answer_callback_query(call.id, 'Выбрана категория Аудиокниги на иностранных языках')
         CATEGORY = 'Аудиокниги на иностранных языках'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '47':
-        bot.answer_callback_query(call.id, 'Выбрана категория Видеоуроки и обучающие интерактивные DVD')
         CATEGORY = 'Видеоуроки и обучающие интерактивные DVD'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '48':
-        bot.answer_callback_query(call.id, 'Выбрана категория Боевые искусства (Видеоуроки)')
         CATEGORY = 'Боевые искусства (Видеоуроки)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '49':
-        bot.answer_callback_query(call.id, 'Выбрана категория Компьютерные видеоуроки и обучающие интерактивные DVD')
         CATEGORY = 'Компьютерные видеоуроки и обучающие интерактивные DVD'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '50':
-        bot.answer_callback_query(call.id, 'Выбрана категория Радиоспектакли, история, мемуары')
         CATEGORY = 'Радиоспектакли, история, мемуары'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '51':
-        bot.answer_callback_query(call.id, 'Выбрана категория Фантастика, фэнтези, мистика, ужасы, фанфики')
         CATEGORY = 'Фантастика, фэнтези, мистика, ужасы, фанфики'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '52':
-        bot.answer_callback_query(call.id, 'Выбрана категория Религии')
         CATEGORY = 'Религии'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '53':
-        bot.answer_callback_query(call.id, 'Выбрана категория Прочая литература')
         CATEGORY = 'Прочая литература'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '54':
-        bot.answer_callback_query(call.id, 'Выбрана категория Ремонт и эксплуатация транспортных средств')
         CATEGORY = 'Ремонт и эксплуатация транспортных средств'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '55':
-        bot.answer_callback_query(call.id, 'Выбрана категория Фильмы и передачи по авто/мото')
         CATEGORY = 'Фильмы и передачи по авто/мото'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '56':
-        bot.answer_callback_query(call.id, 'Выбрана категория Классическая и современная академическая музыка')
         CATEGORY = 'Классическая и современная академическая музыка'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '57':
-        bot.answer_callback_query(call.id, 'Выбрана категория Фольклор, Народная и Этническая музыка')
         CATEGORY = 'Фольклор, Народная и Этническая музыка'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '58':
-        bot.answer_callback_query(call.id, 'Выбрана категория New Age, Relax, Meditative & Flamenco')
         CATEGORY = 'New Age, Relax, Meditative & Flamenco'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '59':
-        bot.answer_callback_query(call.id, 'Выбрана категория Рэп, Хип-Хоп, R\'n\'B')
         CATEGORY = 'Рэп, Хип-Хоп, R\'n\'B'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '60':
-        bot.answer_callback_query(call.id, 'Выбрана категория Reggae, Ska, Dub')
         CATEGORY = 'Reggae, Ska, Dub'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '61':
-        bot.answer_callback_query(call.id, 'Выбрана категория Саундтреки, караоке и мюзиклы')
         CATEGORY = 'Саундтреки, караоке и мюзиклы'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '62':
-        bot.answer_callback_query(call.id, 'Выбрана категория Шансон, Авторская и Военная песня')
         CATEGORY = 'Шансон, Авторская и Военная песня'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '63':
-        bot.answer_callback_query(call.id, 'Выбрана категория Музыка других жанров')
         CATEGORY = 'Музыка других жанров'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '64':
-        bot.answer_callback_query(call.id, 'Выбрана категория Отечественная поп-музыка')
         CATEGORY = 'Отечественная поп-музыка'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '65':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зарубежная поп-музыка')
         CATEGORY = 'Зарубежная поп-музыка'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '66':
-        bot.answer_callback_query(call.id, 'Выбрана категория Eurodance, Disco, Hi-NRG')
         CATEGORY = 'Eurodance, Disco, Hi-NRG'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '67':
-        bot.answer_callback_query(call.id, 'Выбрана категория Видео, DVD Video, HD Video (поп-музыка)')
         CATEGORY = 'Видео, DVD Video, HD Video (поп-музыка)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '68':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зарубежный джаз')
         CATEGORY = 'Зарубежный джаз'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '69':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зарубежный блюз')
         CATEGORY = 'Зарубежный блюз'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '70':
-        bot.answer_callback_query(call.id, 'Выбрана категория Отечественный джаз и блюз')
         CATEGORY = 'Отечественный джаз и блюз'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '71':
-        bot.answer_callback_query(call.id, 'Выбрана категория Видео, DVD Video, HD Video (Джаз и блюз)')
         CATEGORY = 'Видео, DVD Video, HD Video (Джаз и блюз)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '72':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зарубежный Rock')
         CATEGORY = 'Зарубежный Rock'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '73':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зарубежный Metal')
         CATEGORY = 'Зарубежный Metal'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '74':
-        bot.answer_callback_query(call.id, 'Выбрана категория Зарубежные Alternative, Punk, Independent')
         CATEGORY = 'Зарубежные Alternative, Punk, Independent'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '75':
-        bot.answer_callback_query(call.id, 'Выбрана категория Отечественный Rock, Metal')
         CATEGORY = 'Отечественный Rock, Metal'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '76':
-        bot.answer_callback_query(call.id, 'Выбрана категория Видео, DVD Video, HD Video (Рок-музыка)')
         CATEGORY = 'Видео, DVD Video, HD Video (Рок-музыка)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '77':
-        bot.answer_callback_query(call.id, 'Выбрана категория Trance, Goa Trance, Psy-Trance, PsyChill, Ambient, Dub')
         CATEGORY = 'Trance, Goa Trance, Psy-Trance, PsyChill, Ambient, Dub'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '78':
-        bot.answer_callback_query(call.id, 'Выбрана категория House, Techno, Hardcore, Hardstyle, Jumpstyle')
         CATEGORY = 'House, Techno, Hardcore, Hardstyle, Jumpstyle'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '79':
-        bot.answer_callback_query(call.id, 'Выбрана категория Drum & Bass, Jungle, Breakbeat, Dubstep, IDM, Electro')
         CATEGORY = 'Drum & Bass, Jungle, Breakbeat, Dubstep, IDM, Electro'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '80':
-        bot.answer_callback_query(call.id, 'Выбрана категория Chillout, Lounge, Downtempo, Trip-Hop')
         CATEGORY = 'Chillout, Lounge, Downtempo, Trip-Hop'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '81':
-        bot.answer_callback_query(call.id,
-                                  'Выбрана категория Traditional Electronic, Ambient, Modern Classical, Electroacoustic, Ex..')
         CATEGORY = 'Traditional Electronic, Ambient, Modern Classical, Electroacoustic, Ex..'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '82':
-        bot.answer_callback_query(call.id,
-                                  'Выбрана категория Industrial, Noise, EBM, Dark Electro, Aggrotech, Synthpop, New Wave')
         CATEGORY = 'Industrial, Noise, EBM, Dark Electro, Aggrotech, Synthpop, New Wave'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '83':
-        bot.answer_callback_query(call.id, 'Выбрана категория Label Packs (lossless)')
         CATEGORY = 'Label Packs (lossless)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '84':
-        bot.answer_callback_query(call.id, 'Выбрана категория Label packs, Scene packs (lossy)')
         CATEGORY = 'Label packs, Scene packs (lossy)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '85':
-        bot.answer_callback_query(call.id, 'Выбрана категория Электронная музыка (Видео, DVD Video, HD Video)')
         CATEGORY = 'Электронная музыка (Видео, DVD Video, HD Video)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '86':
-        bot.answer_callback_query(call.id, 'Выбрана категория Hi-Res stereo и многоканальная музыка')
         CATEGORY = 'Hi-Res stereo и многоканальная музыка'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '87':
-        bot.answer_callback_query(call.id, 'Выбрана категория Оцифровки с аналоговых носителей')
         CATEGORY = 'Оцифровки с аналоговых носителей'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '88':
-        bot.answer_callback_query(call.id, 'Выбрана категория Неофициальные конверсии цифровых форматов')
         CATEGORY = 'Неофициальные конверсии цифровых форматов'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '89':
-        bot.answer_callback_query(call.id, 'Выбрана категория Игры для Windows')
         CATEGORY = 'Игры для Windows'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '90':
-        bot.answer_callback_query(call.id, 'Выбрана категория Прочее для Windows-игр')
         CATEGORY = 'Прочее для Windows-игр'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '91':
-        bot.answer_callback_query(call.id, 'Выбрана категория Прочее для Microsoft Flight Simulator, Prepar3D, X-Plane')
         CATEGORY = 'Прочее для Microsoft Flight Simulator, Prepar3D, X-Plane'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '92':
-        bot.answer_callback_query(call.id, 'Выбрана категория Игры для Macintosh')
         CATEGORY = 'Игры для Macintosh'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '93':
-        bot.answer_callback_query(call.id, 'Выбрана категория Игры для Linux')
         CATEGORY = 'Игры для Linux'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '94':
-        bot.answer_callback_query(call.id, 'Выбрана категория Игры для консолей')
         CATEGORY = 'Игры для консолей'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '95':
-        bot.answer_callback_query(call.id, 'Выбрана категория Видео для консолей')
         CATEGORY = 'Видео для консолей'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '96':
-        bot.answer_callback_query(call.id, 'Выбрана категория Игры для мобильных устройств')
         CATEGORY = 'Игры для мобильных устройств'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '97':
-        bot.answer_callback_query(call.id, 'Выбрана категория Игровое видео')
         CATEGORY = 'Игровое видео'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '98':
-        bot.answer_callback_query(call.id, 'Выбрана категория Операционные системы от Microsoft')
         CATEGORY = 'Операционные системы от Microsoft'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '99':
-        bot.answer_callback_query(call.id, 'Выбрана категория Linux, Unix и другие ОС')
         CATEGORY = 'Linux, Unix и другие ОС'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '100':
-        bot.answer_callback_query(call.id, 'Выбрана категория Тестовые диски для настройки аудио/видео аппаратуры')
         CATEGORY = 'Тестовые диски для настройки аудио/видео аппаратуры'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '101':
-        bot.answer_callback_query(call.id, 'Выбрана категория Системные программы')
         CATEGORY = 'Системные программы'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '102':
-        bot.answer_callback_query(call.id, 'Выбрана категория Системы для бизнеса, офиса, научной и проектной работы')
         CATEGORY = 'Системы для бизнеса, офиса, научной и проектной работы'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '103':
-        bot.answer_callback_query(call.id, 'Выбрана категория Веб-разработка и Программирование')
         CATEGORY = 'Веб-разработка и Программирование'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '104':
-        bot.answer_callback_query(call.id, 'Выбрана категория Программы для работы с мультимедиа и 3D')
         CATEGORY = 'Программы для работы с мультимедиа и 3D'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '105':
-        bot.answer_callback_query(call.id, 'Выбрана категория Материалы для мультимедиа и дизайна')
         CATEGORY = 'Материалы для мультимедиа и дизайна'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '106':
-        bot.answer_callback_query(call.id, 'Выбрана категория ГИС, системы навигации и карты')
         CATEGORY = 'ГИС, системы навигации и карты'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '107':
-        bot.answer_callback_query(call.id, 'Выбрана категория Приложения для мобильных устройств')
         CATEGORY = 'Приложения для мобильных устройств'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '108':
-        bot.answer_callback_query(call.id, 'Выбрана категория Видео для мобильных устройств')
         CATEGORY = 'Видео для мобильных устройств'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '109':
-        bot.answer_callback_query(call.id, 'Выбрана категория Apple Macintosh')
         CATEGORY = 'Apple Macintosh'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '110':
-        bot.answer_callback_query(call.id, 'Выбрана категория iOS')
         CATEGORY = 'iOS'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '111':
-        bot.answer_callback_query(call.id, 'Выбрана категория Видео')
         CATEGORY = 'Видео'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '112':
-        bot.answer_callback_query(call.id, 'Выбрана категория Видео HD')
         CATEGORY = 'Видео HD'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '113':
-        bot.answer_callback_query(call.id, 'Выбрана категория Аудио')
         CATEGORY = 'Аудио'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '114':
-        bot.answer_callback_query(call.id, 'Выбрана категория Разное (раздачи)')
         CATEGORY = 'Разное (раздачи)'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '115':
-        bot.answer_callback_query(call.id, 'Выбрана категория Тестовый форум')
         CATEGORY = 'Тестовый форум'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
     elif call.data == '116':
-        bot.answer_callback_query(call.id, 'Выбрана категория Отчеты о встречах')
         CATEGORY = 'Отчеты о встречах'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
+        bot.register_next_step_handler(send, subcategories(call))
+    # make handlers for subcategories
+    elif call.data == '52-0':
+        SUBCATEGORY = '[Аудио] Православие'
+        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(SUBCATEGORY))
+        bot.register_next_step_handler(send, targetsearch(call))
 
 
 
@@ -412,7 +534,6 @@ def start(message):
     соответствующего пункта в меню, либо с помощью команды /instruction.
     """
     bot.send_message(message.from_user.id, introduction, reply_markup=keyboard)
-    # bot.register_next_step_handler(send, second)
 
 
 @bot.message_handler(func=lambda message: True)
@@ -445,7 +566,7 @@ def instruction(message):
                  )
 
     bot.send_message(message.from_user.id, instruction, reply_markup=keyboard)
-    # bot.register_next_step_handler(send, second)
+
 
 
 @bot.message_handler(func=lambda message: True)
@@ -518,7 +639,6 @@ def first_categories(message):
                  InlineKeyboardButton('Меню', callback_data='m')
                  )
     bot.send_message(message.from_user.id, 'Выберите категорию из списка', reply_markup=keyboard)
-    # bot.register_next_step_handler(send, second)
 
 
 @bot.message_handler(func=lambda message: True)
@@ -589,21 +709,42 @@ def second_categories(message):
                  InlineKeyboardButton('Меню', callback_data='m')
                  )
     bot.send_message(message.from_user.id, 'Выберите категорию из списка', reply_markup=keyboard)
-    # bot.register_next_step_handler(send, second)
 
 
 @bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['subcategories'])
 def subcategories(message):
     global SUBCATEGORY
+    no_subcategory_text = """Сперва необходимо выбрать категорию. Сделать это можно из меню по команде /start или с помощью \
+    команд /categories58 и /categories117"""
+
+    subcategory_choose_text = """Перенаправляю вас на выбор подкатегории. Обратите внимание, что в каждой категории \
+    свое количество подкатегорий. В некоторых категориях подкатегорий нет."""
+
     if CATEGORY == None:
-        text = """Сперва необходимо выбрать категорию. Сделать это можно из меню по команде /start или с помощью \
-        команд /categories58 и /categories117"""
-        # add logic for creating keyboard for every category
-        send = bot.send_message(message.from_user.id, text)
+        send = bot.send_message(message.from_user.id, no_subcategory_text)
         bot.register_next_step_handler(send, first_categories)
-    send = bot.send_message(message.from_user.id, 'Здесь будет реализован выбор подкатегории'.format(CATEGORY))
-    bot.register_next_step_handler(send, targetsearch(message))
+
+    with open(cat_dict, 'r', encoding='utf-8') as dictionary:
+        d = json.load(dictionary)
+        ctgs = [x for i, x in enumerate(d)]
+        subcategories = d[CATEGORY]
+        if len(subcategories) == 0:
+            SUBCATEGORY = None
+            text = """У данной категории ({}) нет подкатегорий"""
+            send = bot.send_message(message.from_user.id, text.format(CATEGORY))
+            bot.register_next_step_handler(send, targetsearch(message))
+
+        keyboard = InlineKeyboardMarkup()
+
+        keyboard.row_width = 1
+
+        for sbct in subcategories:
+            clean_sbct = sbct.replace("'", "\'")
+            clbk = '{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
+            keyboard.add(InlineKeyboardButton(clean_sbct, callback_data=clbk))
+        bot.send_message(message.from_user.id, subcategory_choose_text, reply_markup=keyboard)
+
 
 
 @bot.message_handler(func=lambda message: True)
