@@ -4,7 +4,7 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
 import sqlite3
 import json
-# import utils
+import utils
 import config
 from pprint import pprint
 
@@ -29,6 +29,8 @@ def category_query(call):
     """
     global CATEGORY
     global SUBCATEGORY
+
+
     category_choose_text = """Перенаправляю вас на выбор категории. Обратите внимание, что всего 117 категорий, \
     но за 1 раз вам будет выведено только 58. На остальные категории вы сможете переключиться внутри меню выбора. \
     Если оно не выводится, вы можете вызвать его с помощью команд /categories58 и /categories117"""
@@ -509,7 +511,6 @@ def category_query(call):
         CATEGORY = 'Отчеты о встречах'
         send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
         bot.register_next_step_handler(send, subcategories(call))
-    # make handlers for subcategories
     elif call.data == '0-0':
         SUBCATEGORY = 'Конкурсы'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
@@ -3203,21 +3204,15 @@ def category_query(call):
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-1':
-        SUBCATEGORY = 'Отечественный R'
-        n
-        'B (lossy)'
+        SUBCATEGORY = 'Отечественный R\'n\'B (lossy)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-2':
-        SUBCATEGORY = 'Отечественный Рэп, Хип-Хоп, R'
-        n
-        'B (lossless)'
+        SUBCATEGORY = 'Отечественный Рэп, Хип-Хоп, R\'n\'B (lossless)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-3':
-        SUBCATEGORY = 'Зарубежный R'
-        n
-        'B (lossy)'
+        SUBCATEGORY = 'Зарубежный R\'n\'B (lossy)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-4':
@@ -3229,9 +3224,7 @@ def category_query(call):
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-6':
-        SUBCATEGORY = 'Зарубежный R'
-        n
-        'B (lossless)'
+        SUBCATEGORY = 'Зарубежный R\'n\'B (lossless)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-7':
@@ -3239,9 +3232,7 @@ def category_query(call):
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-8':
-        SUBCATEGORY = 'Отечественный R'
-        n
-        'B (Видео)'
+        SUBCATEGORY = 'Отечественный R\'n\'B (Видео)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-9':
@@ -3249,21 +3240,15 @@ def category_query(call):
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-10':
-        SUBCATEGORY = 'Зарубежный R'
-        n
-        'B (Видео)'
+        SUBCATEGORY = 'Зарубежный R\'n\'B (Видео)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-11':
-        SUBCATEGORY = 'Рэп, Хип-Хоп, R'
-        n
-        'B (DVD Video)'
+        SUBCATEGORY = 'Рэп, Хип-Хоп, R\'n\'B (DVD Video)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '59-12':
-        SUBCATEGORY = 'Рэп, Хип-Хоп, R'
-        n
-        'B (HD Видео)'
+        SUBCATEGORY = 'Рэп, Хип-Хоп, R\'n\'B (HD Видео)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '60-0':
@@ -3755,15 +3740,11 @@ def category_query(call):
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '72-12':
-        SUBCATEGORY = 'Rockabilly, Psychobilly, Rock'
-        n
-        'Roll (lossless)'
+        SUBCATEGORY = 'Rockabilly, Psychobilly, Rock\'n\'Roll (lossless)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '72-13':
-        SUBCATEGORY = 'Rockabilly, Psychobilly, Rock'
-        n
-        'Roll (lossy)'
+        SUBCATEGORY = 'Rockabilly, Psychobilly, Rock\'n\'Roll (lossy)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '72-14':
@@ -4323,9 +4304,7 @@ def category_query(call):
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '87-2':
-        SUBCATEGORY = 'Rap, Hip-Hop, R'
-        n
-        'B, Reggae, Ska, Dub (оцифровки)'
+        SUBCATEGORY = 'Rap, Hip-Hop, R\'n\'B, Reggae, Ska, Dub (оцифровки)'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
         bot.register_next_step_handler(send, targetsearch(call))
     elif call.data == '87-3':
@@ -5206,18 +5185,6 @@ def category_query(call):
         bot.register_next_step_handler(send, targetsearch(call))
 
 
-
-
-
-
-
-    elif call.data == '52-0':
-        SUBCATEGORY = '[Аудио] Православие'
-        send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(SUBCATEGORY))
-        bot.register_next_step_handler(send, targetsearch(call))
-
-
-
 @bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -5448,19 +5415,45 @@ def subcategories(message):
         bot.send_message(message.from_user.id, subcategory_choose_text, reply_markup=keyboard)
 
 
+@ bot.message_handler(content_types=['text'])
+def text_handler(message):
+    global QUERY
+    text = message.text.lower()
+    QUERY = text
+    send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
+    bot.register_next_step_handler(send, search(message))
+
 
 @bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['globalsearch'])
 def globalsearch(message):
-    bot.send_message(message.from_user.id, 'Здесь будет реализован глобальный поиск.\n{}\n{}'.format(CATEGORY, SUBCATEGORY))
+    bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
 
 
 @bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['targetsearch'])
 def targetsearch(message):
-    bot.send_message(message.from_user.id, 'Здесь будет реализован адресный поиск.\n{}\n{}'.format(CATEGORY, SUBCATEGORY))
+    if (CATEGORY is None) and (SUBCATEGORY is None):
+        bot.send_message(message.from_user.id, 'Сперва необходимо выбрать категорию')
+    bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
 
-
+@bot.message_handler(func=lambda message: True)
+def search(message):
+    db = 'rutracker_base.sqlite'
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT * FROM torrents WHERE Category=?, Subcategory=?, Torrent=?", (CATEGORY, SUBCATEGORY, QUERY)
+        )
+        result = cursor.fetchall()
+        print(CATEGORY, SUBCATEGORY, QUERY)
+        print(result)
+        bot.send_message(message.from_user.id, result)
+    except sqlite3.DatabaseError as err:
+        print("Error: ", err)
+    else:
+        conn.commit()
 
 if __name__ == '__main__':
     bot.polling(none_stop=True, interval=0, timeout=20)
