@@ -5436,11 +5436,11 @@ def text_handler(message):
     text = message.text.lower()
     QUERY = text
     send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
-    bot.register_next_step_handler(send, search(CATEGORY, SUBCATEGORY, QUERY))
+    bot.register_next_step_handler(send, search(message))
 
 
-# @bot.message_handler(func=lambda message: True)
-def search(CATEGORY, SUBCATEGORY, QUERY):
+@bot.message_handler(func=lambda message: True)
+def search(message):
     db = 'rutracker.sqlite'
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
