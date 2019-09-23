@@ -34,10 +34,10 @@ def category_query(call):
     category_choose_text = """Перенаправляю вас на выбор категории. Обратите внимание, что всего 117 категорий, \
     но за 1 раз вам будет выведено только 58. На остальные категории вы сможете переключиться внутри меню выбора. \
     Если оно не выводится, вы можете вызвать его с помощью команд /categories58 и /categories117"""
-    if call.data == 'Выбор категории 1-58':
+    if call.data == 'Выбор категории 1-58' or call.data == 'e2':
         send = bot.send_message(call.from_user.id, category_choose_text)
         bot.register_next_step_handler(send, first_categories(call))
-    elif call.data == 'Выбор категории 59-117':
+    elif call.data == 'Выбор категории 59-117' or call.data == 'e1':
         send = bot.send_message(call.from_user.id, category_choose_text)
         bot.register_next_step_handler(send, second_categories(call))
     elif call.data == 'm':
@@ -5415,15 +5415,6 @@ def subcategories(message):
         bot.send_message(message.from_user.id, subcategory_choose_text, reply_markup=keyboard)
 
 
-@ bot.message_handler(content_types=['text'])
-def text_handler(message):
-    global QUERY
-    text = message.text.lower()
-    QUERY = text
-    send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
-    bot.register_next_step_handler(send, search(message))
-
-
 @bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['globalsearch'])
 def globalsearch(message):
@@ -5435,25 +5426,36 @@ def globalsearch(message):
 def targetsearch(message):
     if (CATEGORY is None) and (SUBCATEGORY is None):
         bot.send_message(message.from_user.id, 'Сперва необходимо выбрать категорию')
-    bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
+    send = bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
+    bot.register_next_step_handler(send, text_handler)
 
-@bot.message_handler(func=lambda message: True)
-def search(message):
-    db = 'rutracker_base.sqlite'
+
+@ bot.message_handler(func=lambda message: True)
+def text_handler(message):
+    global QUERY
+    text = message.text.lower()
+    QUERY = text
+    send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
+    bot.register_next_step_handler(send, search(CATEGORY, SUBCATEGORY, QUERY))
+
+
+# @bot.message_handler(func=lambda message: True)
+def search(CATEGORY, SUBCATEGORY, QUERY):
+    db = 'rutracker.sqlite'
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "SELECT * FROM torrents WHERE Category=?, Subcategory=?, Torrent=?", (CATEGORY, SUBCATEGORY, QUERY)
+            "SELECT * FROM torrents WHERE Category=? AND Subcategory=? AND Torrent=?", (CATEGORY, SUBCATEGORY, QUERY)
         )
         result = cursor.fetchall()
-        print(CATEGORY, SUBCATEGORY, QUERY)
         print(result)
         bot.send_message(message.from_user.id, result)
     except sqlite3.DatabaseError as err:
         print("Error: ", err)
     else:
         conn.commit()
+    conn.close()
 
 if __name__ == '__main__':
     bot.polling(none_stop=True, interval=0, timeout=20)
