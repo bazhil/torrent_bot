@@ -511,6 +511,9 @@ def category_query(call):
         CATEGORY = 'Отчеты о встречах'
         send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
         bot.register_next_step_handler(send, subcategories(call))
+    elif call.data == 'back':
+        send = bot.send_message(call.from_user.id, 'Возвращаемся в выбор категорий')
+        bot.register_next_step_handler(send, first_categories(call))
     elif call.data == '0-0':
         SUBCATEGORY = 'Конкурсы'
         send = bot.send_message(call.from_user.id, 'Выбрана подкатегория: "{}"'.format(SUBCATEGORY))
@@ -5400,7 +5403,7 @@ def subcategories(message):
         subcategories = d[CATEGORY]
         if len(subcategories) == 0:
             SUBCATEGORY = None
-            text = """У данной категории ({}) нет подкатегорий"""
+            text = """У категории ({}) нет подкатегорий. Перенаправляю вас на адресный поиск."""
             send = bot.send_message(message.from_user.id, text.format(CATEGORY))
             bot.register_next_step_handler(send, targetsearch(message))
 
@@ -5412,6 +5415,7 @@ def subcategories(message):
             clean_sbct = sbct.replace("'", "\'")
             clbk = '{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
             keyboard.add(InlineKeyboardButton(clean_sbct, callback_data=clbk))
+        keyboard.add(InlineKeyboardButton('Назад', callback_data='back'))
         bot.send_message(message.from_user.id, subcategory_choose_text, reply_markup=keyboard)
 
 
@@ -5430,34 +5434,44 @@ def targetsearch(message):
     bot.register_next_step_handler(send, text_handler)
 
 
-@ bot.message_handler(func=lambda message: True)
+@bot.message_handler(content_types=['text'])
+# @ bot.message_handler(func=lambda message: True)
 def text_handler(message):
     global QUERY
-    text = message.text.lower()
-    QUERY = text
+    QUERY = message.text.lower()
     send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
-    bot.register_next_step_handler(send, search(message))
+    bot.register_next_step_handler(send, search)
 
 
-@bot.message_handler(func=lambda message: True)
+
+@bot.message_handler(func=lambda call: True)
+# @bot.message_handler(content_types=['text'])
 def search(message):
     db = 'rutracker.sqlite'
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
-    try:
-        cursor.execute(
-            "SELECT * FROM torrents WHERE Category=? AND Subcategory=? AND Torrent=?", (CATEGORY, SUBCATEGORY, QUERY)
-        )
-        result = cursor.fetchall()
-        print(result)
-        bot.send_message(message.from_user.id, result)
-    except sqlite3.DatabaseError as err:
-        print("Error: ", err)
-    else:
-        conn.commit()
-    conn.close()
+    answer = ''
+    while True:
+        try:
+            cursor.execute(
+                "SELECT * FROM torrents WHERE Category=? AND Subcategory=?", (CATEGORY, SUBCATEGORY)
+            )
+            result = cursor.fetchall()
+            for i in result:
+                name = list(i)[2]
+                link = list(i)[3]
+                if QUERY in name.lower():
+                    answer += name + '\n' + link + '\n\n'
+                # return answer
+            bot.send_message(message.from_user.id, answer)
+            conn.commit()
+        except sqlite3.DatabaseError as err:
+            print("Error: ", err)
+        finally:
+            conn.close()
+
 
 if __name__ == '__main__':
-    bot.polling(none_stop=True, interval=0, timeout=20)
+    # bot.polling(none_stop=True, interval=0, timeout=20)
     # bot.polling(none_stop=True)
-    # bot.infinity_polling()
+    bot.infinity_polling()
