@@ -2,6 +2,8 @@
 
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
+import requests
+import urllib3
 import sqlite3
 import json
 import utils
@@ -5422,7 +5424,8 @@ def subcategories(message):
 @bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['globalsearch'])
 def globalsearch(message):
-    bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
+    send = bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
+    bot.register_next_step_handler(send, text_handler(message))
 
 
 @bot.message_handler(func=lambda message: True)
@@ -5431,27 +5434,29 @@ def targetsearch(message):
     if (CATEGORY is None) and (SUBCATEGORY is None):
         bot.send_message(message.from_user.id, 'Сперва необходимо выбрать категорию')
     send = bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
-    bot.register_next_step_handler(send, text_handler)
+    bot.register_next_step_handler(send, text_handler(message))
 
 
-@bot.message_handler(content_types=['text'])
-# @ bot.message_handler(func=lambda message: True)
+# @bot.message_handler(content_types=['text'])
+@ bot.message_handler(func=lambda message: True)
 def text_handler(message):
     global QUERY
     QUERY = message.text.lower()
-    send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
-    bot.register_next_step_handler(send, search)
+    print(QUERY)
+    # send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
+    # bot.register_next_step_handler(send, search)
 
 
 
-@bot.message_handler(func=lambda call: True)
-# @bot.message_handler(content_types=['text'])
-def search(message):
+# @bot.message_handler(func=lambda call: True)
+# # @bot.message_handler(content_types=['text'])
+# def search(call):
     db = 'rutracker.sqlite'
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
     answer = ''
-    while True:
+
+    if (CATEGORY is not None) and (SUBCATEGORY is not None):
         try:
             cursor.execute(
                 "SELECT * FROM torrents WHERE Category=? AND Subcategory=?", (CATEGORY, SUBCATEGORY)
@@ -5462,7 +5467,41 @@ def search(message):
                 link = list(i)[3]
                 if QUERY in name.lower():
                     answer += name + '\n' + link + '\n\n'
-                # return answer
+            bot.send_message(message.from_user.id, answer)
+            conn.commit()
+        except sqlite3.DatabaseError as err:
+            print("Error: ", err)
+        finally:
+            conn.close()
+    elif CATEGORY is not None:
+        try:
+            cursor.execute(
+                "SELECT * FROM torrents WHERE Category=?", (CATEGORY)
+            )
+            result = cursor.fetchall()
+            for i in result:
+                name = list(i)[2]
+                link = list(i)[3]
+                if QUERY in name.lower():
+                    answer += name + '\n' + link + '\n\n'
+            bot.send_message(message.from_user.id, answer)
+            conn.commit()
+        except sqlite3.DatabaseError as err:
+            print("Error: ", err)
+        finally:
+            conn.close()
+    elif QUERY is not None:
+
+        try:
+            cursor.execute(
+                "SELECT * FROM torrents where Torrent=?", (QUERY or (i for i in QUERY.split(' ')))
+            )
+            result = cursor.fetchall()
+            for i in result:
+                name = list(i)[2]
+                link = list(i)[3]
+                if QUERY in name.lower():
+                    answer += name + '\n' + link + '\n\n'
             bot.send_message(message.from_user.id, answer)
             conn.commit()
         except sqlite3.DatabaseError as err:
@@ -5472,6 +5511,6 @@ def search(message):
 
 
 if __name__ == '__main__':
-    # bot.polling(none_stop=True, interval=0, timeout=20)
+    bot.polling(none_stop=True, interval=0, timeout=20)
     # bot.polling(none_stop=True)
-    bot.infinity_polling()
+    # bot.infinity_polling()
