@@ -5425,7 +5425,7 @@ def subcategories(message):
 @bot.message_handler(commands=['globalsearch'])
 def globalsearch(message):
     send = bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
-    bot.register_next_step_handler(send, text_handler(message))
+    bot.register_next_step_handler(send, text_handler)
 
 
 @bot.message_handler(func=lambda message: True)
@@ -5434,7 +5434,7 @@ def targetsearch(message):
     if (CATEGORY is None) and (SUBCATEGORY is None):
         bot.send_message(message.from_user.id, 'Сперва необходимо выбрать категорию')
     send = bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
-    bot.register_next_step_handler(send, text_handler(message))
+    bot.register_next_step_handler(send, text_handler)
 
 
 # @bot.message_handler(content_types=['text'])
@@ -5473,41 +5473,7 @@ def text_handler(message):
             print("Error: ", err)
         finally:
             conn.close()
-    elif CATEGORY is not None:
-        try:
-            cursor.execute(
-                "SELECT * FROM torrents WHERE Category=?", (CATEGORY)
-            )
-            result = cursor.fetchall()
-            for i in result:
-                name = list(i)[2]
-                link = list(i)[3]
-                if QUERY in name.lower():
-                    answer += name + '\n' + link + '\n\n'
-            bot.send_message(message.from_user.id, answer)
-            conn.commit()
-        except sqlite3.DatabaseError as err:
-            print("Error: ", err)
-        finally:
-            conn.close()
-    elif QUERY is not None:
 
-        try:
-            cursor.execute(
-                "SELECT * FROM torrents where Torrent=?", (QUERY or (i for i in QUERY.split(' ')))
-            )
-            result = cursor.fetchall()
-            for i in result:
-                name = list(i)[2]
-                link = list(i)[3]
-                if QUERY in name.lower():
-                    answer += name + '\n' + link + '\n\n'
-            bot.send_message(message.from_user.id, answer)
-            conn.commit()
-        except sqlite3.DatabaseError as err:
-            print("Error: ", err)
-        finally:
-            conn.close()
 
 
 if __name__ == '__main__':
