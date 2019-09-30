@@ -9,6 +9,10 @@ import json
 import utils
 import config
 from pprint import pprint
+import queue
+import threading
+
+
 
 
 bot = telebot.TeleBot(config.token)
@@ -5442,15 +5446,13 @@ def targetsearch(message):
 def text_handler(message):
     global QUERY
     QUERY = message.text.lower()
-    print(QUERY)
-    # send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
-    # bot.register_next_step_handler(send, search)
+    send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
+    bot.register_next_step_handler(send, search)
 
 
-
-# @bot.message_handler(func=lambda call: True)
-# # @bot.message_handler(content_types=['text'])
-# def search(call):
+@bot.message_handler(func=lambda message: True)
+# @bot.message_handler(content_types=['text'])
+def search(message):
     db = 'rutracker.sqlite'
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
@@ -5462,11 +5464,32 @@ def text_handler(message):
                 "SELECT * FROM torrents WHERE Category=? AND Subcategory=?", (CATEGORY, SUBCATEGORY)
             )
             result = cursor.fetchall()
+            print(result)
             for i in result:
                 name = list(i)[2]
                 link = list(i)[3]
                 if QUERY in name.lower():
                     answer += name + '\n' + link + '\n\n'
+            bot.send_message(message.from_user.id, answer)
+            conn.commit()
+        except sqlite3.DatabaseError as err:
+            print("Error: ", err)
+        finally:
+            conn.close()
+    elif QUERY is not None:
+        try:
+            cursor.execute(
+                "SELECT Magnet_link FROM torrents WHERE Torrent=?", (QUERY.capitalize())
+            )
+            result = cursor.fetchall()
+            if len(result) == 0:
+                answer = 'Поиск не дал результатов, убедитесь, что запрос введен верно'
+            else:
+                for i in result:
+                    name = list(i)[2]
+                    link = list(i)[3]
+                    if QUERY in name.lower():
+                        answer += name + '\n' + link + '\n\n'
             bot.send_message(message.from_user.id, answer)
             conn.commit()
         except sqlite3.DatabaseError as err:
