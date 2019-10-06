@@ -3,6 +3,7 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler
 import logging
+import re
 
 import config
 
@@ -72,11 +73,27 @@ def instruction(update, context):
                 [InlineKeyboardButton('Выбор категории 59-117', callback_data='Выбор категории 59-117')],
                 [InlineKeyboardButton('Поиск по категориям', callback_data='Поиск по категориям')],
                 [InlineKeyboardButton('Глобальный поиск', callback_data='Глобальный поиск')],
-                [InlineKeyboardButton('Меню', callback_data='Меню')]
+                [InlineKeyboardButton('Меню', callback_data='m')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     # Send message with text and appended InlineKeyboard
     bot.sendMessage(chat_id, instruction, reply_markup=reply_markup)
+
+
+def menu(update, context):
+    query = update.callback_query
+    bot = context.bot
+    chat_id = query.message.chat.id
+    keyboard = [[InlineKeyboardButton('Инструкция', callback_data='Инструкция')],
+                [InlineKeyboardButton('Выбор категории 1-58', callback_data='Выбор категории 1-58')],
+                [InlineKeyboardButton('Выбор категории 59-117', callback_data='Выбор категории 59-117')],
+                [InlineKeyboardButton('Поиск по категориям', callback_data='Поиск по категориям')],
+                [InlineKeyboardButton('Глобальный поиск', callback_data='Глобальный поиск')]
+                ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    # Send message with text and appended InlineKeyboard
+    bot.sendMessage(chat_id, 'Выберите пункт в меню', reply_markup=reply_markup)
+
 
 
 def first_categories(update, context):
@@ -222,6 +239,29 @@ def second_categories(update, context):
     bot.sendMessage(chat_id, 'Выберите категорию', reply_markup=reply_markup)
 
 
+def choose_handler(update, context):
+    global CATEGORY
+    global SUBCATEGORY
+    print(type(context))
+    bot = context.bot
+    chat_id = update.callback_query.message.chat.id
+    data = update.callback_query.message.data
+    if data == '0':
+        print(data)
+        CATEGORY = 'Rutracker Awards (мероприятия и конкурсы)'
+        bot.sendMessage(chat_id, 'Выбрана категория: {}'.format(CATEGORY))
+        bot.job(subcategory)
+    elif data == '1':
+        CATEGORY = 'Зарубежное кино'
+        bot.sendMessage(chat_id, 'Выбрана категория: {}'.format(CATEGORY))
+        bot.job(subcategory(update, context))
+
+def subcategory(update, context):
+    bot = context.bot
+    chat_id = update.callback_query.message.chat.id
+    bot.sendMessage(chat_id, 'Здесь будет реализован выбоор подкатегории')
+
+
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
@@ -249,7 +289,8 @@ def main():
     dp.add_handler(CallbackQueryHandler(instruction, pattern='Инструкция'))
     dp.add_handler(CallbackQueryHandler(first_categories, pattern='Выбор категории 1-58'))
     dp.add_handler(CallbackQueryHandler(second_categories, pattern='Выбор категории 59-117'))
-    # dp.add_handler(CallbackQueryHandler(start, pattern='m'))
+    dp.add_handler(CallbackQueryHandler(menu, pattern='m'))
+    dp.add_handler(CallbackQueryHandler(choose_handler, pattern=re.compile('\d')))
     # dp.add_handler()
 
     # log all errors
