@@ -4,6 +4,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler
 import logging
 import re
+import json
 
 import config
 
@@ -241,25 +242,66 @@ def second_categories(update, context):
 
 def choose_handler(update, context):
     global CATEGORY
-    global SUBCATEGORY
-    print(type(context))
+
+    with open(cat_dict, 'r', encoding='utf-8') as dict:
+        d = json.load(dict)
+        ctgs = [x for i, x in enumerate(d)]
+
     bot = context.bot
     chat_id = update.callback_query.message.chat.id
-    data = update.callback_query.message.data
-    if data == '0':
-        print(data)
-        CATEGORY = 'Rutracker Awards (мероприятия и конкурсы)'
+    data = update.callback_query.data
+
+    if int(data) in list(range(117)):
+        CATEGORY = ctgs[int(data)]
         bot.sendMessage(chat_id, 'Выбрана категория: {}'.format(CATEGORY))
-        bot.job(subcategory)
-    elif data == '1':
-        CATEGORY = 'Зарубежное кино'
-        bot.sendMessage(chat_id, 'Выбрана категория: {}'.format(CATEGORY))
-        bot.job(subcategory(update, context))
+        subcategory(update, context)
+
 
 def subcategory(update, context):
+    global SUBCATEGORY
     bot = context.bot
     chat_id = update.callback_query.message.chat.id
-    bot.sendMessage(chat_id, 'Здесь будет реализован выбоор подкатегории')
+
+    no_subcategory_text = """Сперва необходимо выбрать категорию. Сделать это можно в меню"""
+
+    subcategory_choose_text = """Перенаправляю вас на выбор подкатегории. Обратите внимание, что в каждой категории \
+    свое количество подкатегорий. В некоторых категориях подкатегорий нет."""
+    if CATEGORY == None:
+        bot.sendMessage(chat_id, no_subcategory_text)
+        menu(update, context)
+
+    with open(cat_dict, 'r', encoding='utf-8') as dictionary:
+        d = json.load(dictionary)
+        ctgs = [x for i, x in enumerate(d)]
+        subcategories = d[CATEGORY]
+        if len(subcategories) == 0:
+            SUBCATEGORY = None
+            text = """У категории ({}) нет подкатегорий. Перенаправляю вас на адресный поиск."""
+            bot.sendMessage(chat_id, text)
+            target_search(update, context)
+
+        keyboard = []
+
+        # for sbct in subcategories:
+        #     clean_sbct = sbct.replace("'", "\'")
+        #     clbk = '{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
+        #     keyboard.append([InlineKeyboardButton(clean_sbct, callback_data=clbk)])
+        # keyboard.append([InlineKeyboardButton('Назад', callback_data='back')])
+
+        bot.sendMessage(chat_id, 'Выберите подкатегорию: ', reply_markup=keyboard)
+        target_search(update, context)
+
+
+def target_search(update, context):
+    bot = context.bot
+    chat_id = update.callback_query.message.chat.id
+    bot.sendMessage(chat_id, 'Здесь будет реализован адресный поиск')
+
+
+def global_search(update, context):
+    bot = context.bot
+    chat_id = update.callback_query.message.chat.id
+    bot.sendMessage(chat_id, 'Здесь будет реализован глобальный поиск')
 
 
 def error(update, context):
@@ -291,7 +333,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(second_categories, pattern='Выбор категории 59-117'))
     dp.add_handler(CallbackQueryHandler(menu, pattern='m'))
     dp.add_handler(CallbackQueryHandler(choose_handler, pattern=re.compile('\d')))
-    # dp.add_handler()
+
 
     # log all errors
     dp.add_error_handler(error)
