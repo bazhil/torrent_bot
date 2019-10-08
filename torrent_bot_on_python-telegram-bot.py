@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
 import logging
 import re
 import json
@@ -24,7 +24,7 @@ QUERY = None
 isRunning = False
 
 # Stages
-FIRST, SECOND, THIRD, FOURTH = range(4)
+CHOOSE_CATEGORY, NO_CATEGORY, CHOOSE_SUBCATEGORY, NO_SUBCATEGORY, TARGET_SEARCH, GLOBAL_SEARCH = range(6)
 
 def start(update, context):
     """Send message with menu on `/start`."""
@@ -45,7 +45,6 @@ def start(update, context):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     # Send message with text and appended InlineKeyboard
-    # update.message.reply_text("Выберите пункт в меню", reply_markup=reply_markup)
     bot.sendMessage(chat_id, "Выберите пункт в меню", reply_markup=reply_markup)
 
 
@@ -240,7 +239,7 @@ def second_categories(update, context):
     bot.sendMessage(chat_id, 'Выберите категорию', reply_markup=reply_markup)
 
 
-def choose_handler(update, context):
+def category_handler(update, context):
     global CATEGORY
 
     with open(cat_dict, 'r', encoding='utf-8') as dict:
@@ -254,7 +253,8 @@ def choose_handler(update, context):
     if int(data) in list(range(117)):
         CATEGORY = ctgs[int(data)]
         bot.sendMessage(chat_id, 'Выбрана категория: {}'.format(CATEGORY))
-        subcategory(update, context)
+    subcategory(update, context)
+
 
 
 def subcategory(update, context):
@@ -268,7 +268,7 @@ def subcategory(update, context):
     свое количество подкатегорий. В некоторых категориях подкатегорий нет."""
     if CATEGORY == None:
         bot.sendMessage(chat_id, no_subcategory_text)
-        menu(update, context)
+        return NO_CATEGORY
 
     with open(cat_dict, 'r', encoding='utf-8') as dictionary:
         d = json.load(dictionary)
@@ -278,18 +278,47 @@ def subcategory(update, context):
             SUBCATEGORY = None
             text = """У категории ({}) нет подкатегорий. Перенаправляю вас на адресный поиск."""
             bot.sendMessage(chat_id, text)
-            target_search(update, context)
+            # target_search(update, context)
+            return NO_SUBCATEGORY
 
-        keyboard = []
+    keyboard = []
 
-        # for sbct in subcategories:
-        #     clean_sbct = sbct.replace("'", "\'")
-        #     clbk = '{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
-        #     keyboard.append([InlineKeyboardButton(clean_sbct, callback_data=clbk)])
-        # keyboard.append([InlineKeyboardButton('Назад', callback_data='back')])
+    for sbct in subcategories:
+        clean_sbct = sbct.replace("'", "\'")
+        clbk = '{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
+        keyboard.append([InlineKeyboardButton(clean_sbct, callback_data=clbk)])
+    keyboard.append([InlineKeyboardButton('Назад', callback_data='back')])
 
-        bot.sendMessage(chat_id, 'Выберите подкатегорию: ', reply_markup=keyboard)
-        target_search(update, context)
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    bot.sendMessage(chat_id, 'Выберите подкатегорию: ', reply_markup=reply_markup)
+
+
+
+def subcategory_handler(update, context):
+    global SUBCATEGORY
+    bot = context.bot
+    chat_id = update.callback_query.message.chat.id
+    data = update.callback_query.data
+
+    with open(cat_dict, 'r', encoding='utf-8') as dictionary:
+        d = json.load(dictionary)
+        ctgs = [x for i, x in enumerate(d)]
+        subcategories = d[CATEGORY]
+
+
+    sbct_clbk = {}
+
+    for sbct in subcategories:
+        clean_sbct = sbct.replace("'", "\'")
+        clbk = '{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
+        sbct_clbk[clbk] = clean_sbct
+
+    if data in sbct_clbk:
+        SUBCATEGORY = sbct_clbk[data]
+        print(SUBCATEGORY)
+        bot.sendMessage(chat_id, 'Выбрана подкатегория: {}'.format(SUBCATEGORY))
+    target_search(update, context)
 
 
 def target_search(update, context):
@@ -316,15 +345,6 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    # Setup conversation handler with the states FIRST and SECOND
-    # Use the pattern parameter to pass CallbackQueryies with specific
-    # data pattern to the corresponding handlers.
-    # ^ means "start of line/string"
-    # $ means "end of line/string"
-    # So ^ABC$ will only allow 'ABC'
-
-
-
     # Add conversationhandler to dispatcher it will be used for handling
     # updates
     dp.add_handler(CommandHandler('start', start))
@@ -332,8 +352,10 @@ def main():
     dp.add_handler(CallbackQueryHandler(first_categories, pattern='Выбор категории 1-58'))
     dp.add_handler(CallbackQueryHandler(second_categories, pattern='Выбор категории 59-117'))
     dp.add_handler(CallbackQueryHandler(menu, pattern='m'))
-    dp.add_handler(CallbackQueryHandler(choose_handler, pattern=re.compile('\d')))
-
+    dp.add_handler(CallbackQueryHandler(category_handler, pattern=re.compile('\d')))
+    dp.add_handler(CallbackQueryHandler(subcategory_handler, pattern=re.compile('\d{2}')))
+    dp.add_handler(CallbackQueryHandler(global_search, pattern='Глобальный поиск'))
+    dp.add_handler(CallbackQueryHandler(target_search, pattern='Поиск по категориям'))
 
     # log all errors
     dp.add_error_handler(error)

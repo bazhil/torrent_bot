@@ -145,7 +145,7 @@ def category_query(call):
         CATEGORY = '🏀 Баскетбол'
         send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
         bot.register_next_step_handler(send, subcategories(call))
-    elif call.data == '244':
+    elif call.data == '24':
         CATEGORY = '🏒 Хоккей'
         send = bot.send_message(call.from_user.id, 'Выбрана категория: "{}"'.format(CATEGORY))
         bot.register_next_step_handler(send, subcategories(call))
@@ -5413,16 +5413,16 @@ def subcategories(message):
             send = bot.send_message(message.from_user.id, text.format(CATEGORY))
             bot.register_next_step_handler(send, targetsearch(message))
 
-        keyboard = InlineKeyboardMarkup()
+    keyboard = InlineKeyboardMarkup()
 
-        keyboard.row_width = 1
+    keyboard.row_width = 1
 
-        for sbct in subcategories:
-            clean_sbct = sbct.replace("'", "\'")
-            clbk = '{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
-            keyboard.add(InlineKeyboardButton(clean_sbct, callback_data=clbk))
-        keyboard.add(InlineKeyboardButton('Назад', callback_data='back'))
-        bot.send_message(message.from_user.id, subcategory_choose_text, reply_markup=keyboard)
+    for sbct in subcategories:
+        clean_sbct = sbct.replace("'", "\'")
+        clbk = '{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
+        keyboard.add(InlineKeyboardButton(clean_sbct, callback_data=clbk))
+    keyboard.add(InlineKeyboardButton('Назад', callback_data='back'))
+    bot.send_message(message.from_user.id, subcategory_choose_text, reply_markup=keyboard)
 
 
 @bot.message_handler(func=lambda message: True)
