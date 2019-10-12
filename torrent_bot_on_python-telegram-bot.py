@@ -281,7 +281,7 @@ def subcategory(update, context):
 
     for sbct in subcategories:
         clean_sbct = sbct.replace("'", "\'")
-        clbk = '{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
+        clbk = '.{}-{}'.format(ctgs.index(CATEGORY), subcategories.index(sbct))
         keyboard.append([InlineKeyboardButton(clean_sbct, callback_data=clbk)])
     keyboard.append([InlineKeyboardButton('Назад', callback_data='back')])
 
@@ -349,8 +349,8 @@ def main():
     dp.add_handler(CallbackQueryHandler(first_categories, pattern='Выбор категории 1-58'))
     dp.add_handler(CallbackQueryHandler(second_categories, pattern='Выбор категории 59-117'))
     dp.add_handler(CallbackQueryHandler(menu, pattern='m'))
-    dp.add_handler(CallbackQueryHandler(category_handler, pattern=re.compile('\d{1,3}')))
-    dp.add_handler(CallbackQueryHandler(subcategory_handler, pattern=re.compile('\d{1,3}-\d{1,3}')))
+    dp.add_handler(CallbackQueryHandler(category_handler, pattern=re.compile('\b?=\d'))
+    dp.add_handler(CallbackQueryHandler(subcategory_handler, pattern=re.compile('\b?=.'))
     dp.add_handler(CallbackQueryHandler(global_search, pattern='Глобальный поиск'))
     dp.add_handler(CallbackQueryHandler(target_search, pattern='Поиск по категориям'))
 
