@@ -36,7 +36,6 @@ def search():
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
     answer = ''
-
     if (CATEGORY is not None) and (SUBCATEGORY is not None):
         try:
             cursor.execute("SELECT * FROM torrents WHERE Category=? AND Subcategory=?", (CATEGORY, SUBCATEGORY))
@@ -70,6 +69,7 @@ def search():
             conn.close()
     return answer
 
+
 @bot.callback_query_handler(func=lambda call: True)
 def category_query(call):
     """
@@ -92,19 +92,24 @@ def category_query(call):
     if data == 'Выбор категории 1-58' or data == 'e2':
         send = bot.send_message(chat_id, category_choose_text)
         bot.register_next_step_handler(send, first_categories(call))
+        return
     elif data == 'Выбор категории 59-117' or data == 'e1':
         send = bot.send_message(chat_id, category_choose_text)
         bot.register_next_step_handler(send, second_categories(call))
+        return
     elif data == 'm':
         send = bot.send_message(chat_id, 'Возврат в стартовое меню')
         bot.register_next_step_handler(send, start(call))
+        return
     elif data.find('-', 1, 4) == -1:
         CATEGORY = ctgs[int(data)]
         send = bot.send_message(chat_id, 'Выбрана категория: {}'.format(CATEGORY))
         bot.register_next_step_handler(send, subcategories(call))
+        return
     elif data == 'back':
         send = bot.send_message(chat_id, 'Возвращаемся в выбор категорий')
         bot.register_next_step_handler(send, first_categories(call))
+        return
     elif len(data.split('-')) == 2:
         ctgs_dict, ctgs = get_ctgs()
 
@@ -121,27 +126,31 @@ def category_query(call):
             SUBCATEGORY = sbct_clbk[call.data]
             send = bot.send_message(chat_id, 'Выбрана подкатегория: {}'.format(SUBCATEGORY))
             bot.register_next_step_handler(send, targetsearch(call))
+        return
 
 
 @bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['start'])
 def start(message):
-    chat_id = message.from_user.id
-    keyboard = InlineKeyboardMarkup()
-    keyboard.row_width = 1
-    keyboard.add(InlineKeyboardButton('Инструкция', callback_data='Инструкция'),
-                 InlineKeyboardButton('Выбор категории 1-58', callback_data='Выбор категории 1-58'),
-                 InlineKeyboardButton('Выбор категории 59-117', callback_data='Выбор категории 59-117'),
-                 InlineKeyboardButton('Поиск по категориям', callback_data='Поиск по категориям'),
-                 InlineKeyboardButton('Глобальный поиск', callback_data='Глобальный поиск')
-                 )
-    introduction = """
-    Добро пожаловать!\n\
-    Данный бот осуществляет поиск magnet-ссылки на раздачу с сайта rutracker.org.\n\
-    Чтобы понять, как работать с ботом рекомендуется прочитать инструкцию. Сделать это можно с помощью выбора \
-    соответствующего пункта в меню, либо с помощью команды /instruction.
-    """
-    bot.send_message(chat_id, introduction, reply_markup=keyboard)
+    global isRunning
+    if not isRunning:
+        chat_id = message.from_user.id
+        keyboard = InlineKeyboardMarkup()
+        keyboard.row_width = 1
+        keyboard.add(InlineKeyboardButton('Инструкция', callback_data='Инструкция'),
+                     InlineKeyboardButton('Выбор категории 1-58', callback_data='Выбор категории 1-58'),
+                     InlineKeyboardButton('Выбор категории 59-117', callback_data='Выбор категории 59-117'),
+                     InlineKeyboardButton('Поиск по категориям', callback_data='Поиск по категориям'),
+                     InlineKeyboardButton('Глобальный поиск', callback_data='Глобальный поиск')
+                     )
+        introduction = """
+        Добро пожаловать!\n\
+        Данный бот осуществляет поиск magnet-ссылки на раздачу с сайта rutracker.org.\n\
+        Чтобы понять, как работать с ботом рекомендуется прочитать инструкцию. Сделать это можно с помощью выбора \
+        соответствующего пункта в меню, либо с помощью команды /instruction.
+        """
+        bot.send_message(chat_id, introduction, reply_markup=keyboard)
+        isRunning = True
 
 
 @bot.message_handler(func=lambda message: True)
@@ -175,6 +184,7 @@ def instruction(message):
                  )
 
     bot.send_message(chat_id, instruction, reply_markup=keyboard)
+    return
 
 
 @bot.message_handler(func=lambda message: True)
@@ -195,6 +205,7 @@ def first_categories(message):
     keyboard.add(InlineKeyboardButton('Еще категории', callback_data='e1'),
                  InlineKeyboardButton('Меню', callback_data='m'))
     bot.send_message(chat_id, 'Выберите категорию из списка', reply_markup=keyboard)
+    return
 
 
 @bot.message_handler(func=lambda message: True)
@@ -262,29 +273,37 @@ def subcategories(message):
 @bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['globalsearch'])
 def globalsearch(message):
-    send = bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
+    chat_id = message.from_user.id
+    send = bot.send_message(chat_id, 'Отправьте ваш запрос ответным сообщением')
     bot.register_next_step_handler(send, text_handler)
+    return
 
 
 @bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['targetsearch'])
 def targetsearch(message):
+    chat_id = message.from_user.id
     if (CATEGORY is None) and (SUBCATEGORY is None):
-        bot.send_message(message.from_user.id, 'Сперва необходимо выбрать категорию')
-    send = bot.send_message(message.from_user.id, 'Отправьте ваш запрос ответным сообщением')
+        bot.send_message(chat_id, 'Сперва необходимо выбрать категорию')
+    send = bot.send_message(chat_id, 'Отправьте ваш запрос ответным сообщением')
     bot.register_next_step_handler(send, text_handler)
+    return
 
 
-# @bot.message_handler(content_types=['text'])
+@bot.message_handler(content_types=['text'])
 @ bot.message_handler(func=lambda message: True)
 def text_handler(message):
+    global isRunning
     global QUERY
     QUERY = message.text.lower()
-    send = bot.send_message(message.from_user.id, 'Ваш запрос обрабатывается')
-    bot.register_next_step_handler(send, search())
+    chat_id = message.chat.id
+    send = bot.send_message(chat_id, 'Ваш запрос обрабатывается')
+    bot.register_next_step_handler(send, search)
+    isRunning = False
+    return
 
 
 if __name__ == '__main__':
-    # bot.polling(none_stop=True, interval=0, timeout=20)
-    pdb.run(bot.polling(none_stop=True))
+    bot.polling(none_stop=True, interval=0, timeout=20)
+    # bot.polling(none_stop=True)
     # bot.infinity_polling()
