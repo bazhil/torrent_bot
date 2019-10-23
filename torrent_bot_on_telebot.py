@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import pdb
 import telebot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
-import requests
-import urllib3
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import sqlite3
 import json
-import utils
+
+
 import config
-from pprint import pprint
-import queue
-import threading
 
 
 bot = telebot.TeleBot(config.token)
@@ -36,7 +31,9 @@ def search():
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
     answer = ''
+    print('search-1')
     if (CATEGORY is not None) and (SUBCATEGORY is not None):
+        print(CATEGORY, SUBCATEGORY, QUERY)
         try:
             cursor.execute("SELECT * FROM torrents WHERE Category=? AND Subcategory=?", (CATEGORY, SUBCATEGORY))
             result = cursor.fetchall()
@@ -125,7 +122,7 @@ def category_query(call):
         if data in sbct_clbk:
             SUBCATEGORY = sbct_clbk[call.data]
             send = bot.send_message(chat_id, 'Выбрана подкатегория: {}'.format(SUBCATEGORY))
-            bot.register_next_step_handler(send, targetsearch(call))
+            bot.register_next_step_handler(send, text_handler)
         return
 
 
@@ -254,7 +251,7 @@ def subcategories(message):
             SUBCATEGORY = None
             text = """У категории ({}) нет подкатегорий. Перенаправляю вас на адресный поиск."""
             send = bot.send_message(chat_id, text.format(CATEGORY))
-            bot.register_next_step_handler(send, targetsearch(message))
+            bot.register_next_step_handler(send, text_handler)
             return
 
     keyboard = InlineKeyboardMarkup()
@@ -296,6 +293,7 @@ def text_handler(message):
     global isRunning
     global QUERY
     QUERY = message.text.lower()
+    print(CATEGORY, SUBCATEGORY, QUERY)
     chat_id = message.chat.id
     send = bot.send_message(chat_id, 'Ваш запрос обрабатывается')
     bot.register_next_step_handler(send, search)
@@ -304,6 +302,6 @@ def text_handler(message):
 
 
 if __name__ == '__main__':
-    bot.polling(none_stop=True, interval=0, timeout=20)
-    # bot.polling(none_stop=True)
+    # bot.polling(none_stop=True, interval=0, timeout=20)
+    bot.polling(none_stop=True)
     # bot.infinity_polling()
