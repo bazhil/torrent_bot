@@ -128,7 +128,7 @@ def category_query(call):
         if data in sbct_clbk:
             SUBCATEGORY = sbct_clbk[call.data]
             send = bot.send_message(chat_id, 'Выбрана подкатегория: {}'.format(SUBCATEGORY))
-            bot.register_next_step_handler(send, text_handler(call))
+            bot.register_next_step_handler(send, targetsearch(call))
         STATUS = 2
         return
     elif data == 'Глобальный поиск':
@@ -265,7 +265,7 @@ def subcategories(message):
             SUBCATEGORY = None
             text = """У категории ({}) нет подкатегорий. Перенаправляю вас на адресный поиск."""
             send = bot.send_message(chat_id, text.format(CATEGORY))
-            bot.register_next_step_handler(send, text_handler)
+            bot.register_next_step_handler(send, targetsearch)
             STATUS = 2
             return
 
@@ -309,7 +309,6 @@ def targetsearch(message):
 def text_handler(message):
     global isRunning
     global QUERY
-    print(message)
     QUERY = message.text.lower()
     chat_id = message.chat.id
     send = bot.send_message(chat_id, 'Ваш запрос обрабатывается')
