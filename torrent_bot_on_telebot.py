@@ -4,6 +4,7 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import sqlite3
 import json
+import logging
 
 
 import config
@@ -27,13 +28,12 @@ def get_ctgs():
     return d, ctgs
 
 def search():
+    global isRunning
     db = 'rutracker.sqlite'
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
     answer = ''
-    print('search-1')
     if (CATEGORY is not None) and (SUBCATEGORY is not None):
-        print(CATEGORY, SUBCATEGORY, QUERY)
         try:
             cursor.execute("SELECT * FROM torrents WHERE Category=? AND Subcategory=?", (CATEGORY, SUBCATEGORY))
             result = cursor.fetchall()
@@ -64,6 +64,7 @@ def search():
             print("Error: ", err)
         finally:
             conn.close()
+    isRunning = False
     return answer
 
 
@@ -138,7 +139,6 @@ def category_query(call):
         return
 
 
-@bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['start'])
 def start(message):
     global isRunning
@@ -163,7 +163,6 @@ def start(message):
     return
 
 
-@bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['instruction'])
 def instruction(message):
     chat_id = message.from_user.id
@@ -197,7 +196,6 @@ def instruction(message):
     return
 
 
-@bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['categories58'])
 def first_categories(message):
     chat_id = message.from_user.id
@@ -218,7 +216,6 @@ def first_categories(message):
     return
 
 
-@bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['categories117'])
 def second_categories(message):
     chat_id = message.from_user.id
@@ -239,7 +236,6 @@ def second_categories(message):
     return
 
 
-@bot.message_handler(func=lambda message: True)
 @bot.message_handler(commands=['subcategories'])
 def subcategories(message):
     global SUBCATEGORY
@@ -282,40 +278,42 @@ def subcategories(message):
     return
 
 
-@bot.message_handler(func=lambda message: True)
+
 @bot.message_handler(commands=['globalsearch'])
 def globalsearch(message):
     chat_id = message.from_user.id
-    send = bot.send_message(chat_id, 'Отправьте ваш запрос ответным сообщением')
-    bot.register_next_step_handler(send, text_handler)
+    bot.send_message(chat_id, 'Отправьте ваш запрос ответным сообщением')
+    # bot.register_next_step_handler(send, text_handler(message))
     return
 
 
-@bot.message_handler(func=lambda message: True)
+
 @bot.message_handler(commands=['targetsearch'])
 def targetsearch(message):
     global STATUS
     chat_id = message.from_user.id
     if (CATEGORY is None) and (SUBCATEGORY is None):
         bot.send_message(chat_id, 'Сперва необходимо выбрать категорию')
-    send = bot.send_message(chat_id, 'Отправьте ваш запрос ответным сообщением')
-    bot.register_next_step_handler(send, text_handler)
+    bot.send_message(chat_id, 'Отправьте ваш запрос ответным сообщением')
+    # bot.register_next_step_handler(send, text_handler(message))
     STATUS = 5
     return
 
 
-@bot.message_handler(content_types=['text'])
-@ bot.message_handler(func=lambda message: True)
+@bot.message_handler(func=lambda message: True, content_types=['text', 'photo', 'video', 'document'])
 def text_handler(message):
-    global isRunning
     global QUERY
-    QUERY = message.text.lower()
     chat_id = message.chat.id
-    send = bot.send_message(chat_id, 'Ваш запрос обрабатывается')
-    bot.register_next_step_handler(send, search)
-    isRunning = False
-    return
 
+    if message.content_type == 'text' and STATUS == (2 or 3):
+        QUERY = message.text.lower()
+        send = bot.send_message(chat_id, 'Ваш запрос обрабатывается')
+        bot.register_next_step_handler(send, search())
+    else:
+        send = bot.send_message(chat_id, 'Что-то пошло не по сценарию, вы перенаправляетесь в меню.')
+        bot.register_next_step_handler(send, start(message))
+
+    return
 
 if __name__ == '__main__':
     # bot.polling(none_stop=True, interval=0, timeout=20)
