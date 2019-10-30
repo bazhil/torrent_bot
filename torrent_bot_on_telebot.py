@@ -103,6 +103,19 @@ def category_query(call):
         bot.register_next_step_handler(send, start(call))
         STATUS = 0
         return
+    elif data == 'Поиск по категориям':
+        if CATEGORY == None:
+            send = bot.send_message(chat_id, 'Сперва выберите категорию')
+            bot.register_next_step_handler(send, first_categories(call))
+            return
+        send = bot.send_message(chat_id, 'Перенаправляю вас на поиск по категориям')
+        bot.register_next_step_handler(send, targetsearch(call))
+        STATUS = 0
+        return
+    elif data == 'Глобальный поиск':
+        send = bot.send_message(chat_id, 'Перенаправляю вас на глобальный поиск')
+        bot.register_next_step_handler(send, globalsearch(call))
+        return
     elif data.find('-', 1, 4) == -1:
         CATEGORY = ctgs[int(data)]
         send = bot.send_message(chat_id, 'Выбрана категория: {}'.format(CATEGORY))
@@ -278,14 +291,13 @@ def subcategories(message):
     return
 
 
-
 @bot.message_handler(commands=['globalsearch'])
 def globalsearch(message):
     chat_id = message.from_user.id
     bot.send_message(chat_id, 'Отправьте ваш запрос ответным сообщением')
     # bot.register_next_step_handler(send, text_handler(message))
+    STATUS = 5
     return
-
 
 
 @bot.message_handler(commands=['targetsearch'])
