@@ -89,43 +89,43 @@ def category_query(call):
     Если оно не выводится, вы можете вызвать его с помощью команд /categories58 и /categories117"""
 
     if data == 'Выбор категории 1-58' or data == 'e2':
+        STATUS = 0
         send = bot.send_message(chat_id, category_choose_text)
         bot.register_next_step_handler(send, first_categories(call))
-        STATUS = 0
         return
     elif data == 'Выбор категории 59-117' or data == 'e1':
+        STATUS = 0
         send = bot.send_message(chat_id, category_choose_text)
         bot.register_next_step_handler(send, second_categories(call))
-        STATUS = 0
         return
     elif data == 'm':
+        STATUS = 0
         send = bot.send_message(chat_id, 'Возврат в стартовое меню')
         bot.register_next_step_handler(send, start(call))
-        STATUS = 0
         return
     elif data == 'Поиск по категориям':
         if CATEGORY == None:
             send = bot.send_message(chat_id, 'Сперва выберите категорию')
             bot.register_next_step_handler(send, first_categories(call))
             return
+        STATUS = 0
         send = bot.send_message(chat_id, 'Перенаправляю вас на поиск по категориям')
         bot.register_next_step_handler(send, targetsearch(call))
-        STATUS = 0
         return
     elif data == 'Глобальный поиск':
         send = bot.send_message(chat_id, 'Перенаправляю вас на глобальный поиск')
         bot.register_next_step_handler(send, globalsearch(call))
         return
     elif data.find('-', 1, 4) == -1:
+        STATUS = 1
         CATEGORY = ctgs[int(data)]
         send = bot.send_message(chat_id, 'Выбрана категория: {}'.format(CATEGORY))
         bot.register_next_step_handler(send, subcategories(call))
-        STATUS = 1
         return
     elif data == 'back':
+        STATUS = 0
         send = bot.send_message(chat_id, 'Возвращаемся в выбор категорий')
         bot.register_next_step_handler(send, first_categories(call))
-        STATUS = 0
         return
     elif len(data.split('-')) == 2:
         ctgs_dict, ctgs = get_ctgs()
@@ -133,6 +133,8 @@ def category_query(call):
         subcats = ctgs_dict[CATEGORY]
 
         sbct_clbk = {}
+
+        STATUS = 2
 
         for sbct in subcats:
             clean_sbct = sbct.replace("'", "\'")
@@ -143,7 +145,7 @@ def category_query(call):
             SUBCATEGORY = sbct_clbk[call.data]
             send = bot.send_message(chat_id, 'Выбрана подкатегория: {}'.format(SUBCATEGORY))
             bot.register_next_step_handler(send, targetsearch(call))
-        STATUS = 2
+
         return
     elif data == 'Глобальный поиск':
         send = bot.send_message(chat_id, 'Выбран глобальный поиск')
@@ -155,6 +157,7 @@ def category_query(call):
 @bot.message_handler(commands=['start'])
 def start(message):
     global isRunning
+
     if not isRunning:
         chat_id = message.from_user.id
         keyboard = InlineKeyboardMarkup()
@@ -202,14 +205,14 @@ def instruction(message):
                  InlineKeyboardButton('Выбор категории 59-117', callback_data='Выбор категории 59-117'),
                  InlineKeyboardButton('Поиск по категориям', callback_data='Поиск по категориям'),
                  InlineKeyboardButton('Глобальный поиск', callback_data='Глобальный поиск'),
-                 InlineKeyboardButton('Меню', callback_data='Меню'),
+                 InlineKeyboardButton('Меню', callback_data='m'),
                  )
 
     bot.send_message(chat_id, instruction, reply_markup=keyboard)
     return
 
 
-@bot.message_handler(commands=['categories58'])
+# @bot.message_handler(commands=['categories58'])
 def first_categories(message):
     chat_id = message.from_user.id
 
@@ -229,7 +232,7 @@ def first_categories(message):
     return
 
 
-@bot.message_handler(commands=['categories117'])
+# @bot.message_handler(commands=['categories117'])
 def second_categories(message):
     chat_id = message.from_user.id
 
@@ -249,7 +252,7 @@ def second_categories(message):
     return
 
 
-@bot.message_handler(commands=['subcategories'])
+# @bot.message_handler(commands=['subcategories'])
 def subcategories(message):
     global SUBCATEGORY
     global STATUS
@@ -291,24 +294,26 @@ def subcategories(message):
     return
 
 
-@bot.message_handler(commands=['globalsearch'])
+# @bot.message_handler(commands=['globalsearch'])
 def globalsearch(message):
+    global STATUS
+    STATUS = 5
     chat_id = message.from_user.id
     bot.send_message(chat_id, 'Отправьте ваш запрос ответным сообщением')
     # bot.register_next_step_handler(send, text_handler(message))
-    STATUS = 5
     return
 
 
-@bot.message_handler(commands=['targetsearch'])
+# @bot.message_handler(commands=['targetsearch'])
 def targetsearch(message):
     global STATUS
+    STATUS = 5
     chat_id = message.from_user.id
     if (CATEGORY is None) and (SUBCATEGORY is None):
         bot.send_message(chat_id, 'Сперва необходимо выбрать категорию')
     bot.send_message(chat_id, 'Отправьте ваш запрос ответным сообщением')
     # bot.register_next_step_handler(send, text_handler(message))
-    STATUS = 5
+
     return
 
 
@@ -317,11 +322,13 @@ def text_handler(message):
     global QUERY
     chat_id = message.chat.id
 
-    if message.content_type == 'text' and STATUS == (2 or 3):
+    if message.content_type == 'text' and STATUS in [2, 3, 5]:
+        print(message.text, STATUS)
         QUERY = message.text.lower()
         send = bot.send_message(chat_id, 'Ваш запрос обрабатывается')
-        bot.register_next_step_handler(send, search())
+        bot.register_next_step_handler(send, search)
     else:
+        print(message.text, STATUS)
         send = bot.send_message(chat_id, 'Что-то пошло не по сценарию, вы перенаправляетесь в меню.')
         bot.register_next_step_handler(send, start(message))
 
