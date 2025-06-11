@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
+from telegram import InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Filters
 import logging
 import re
 import json
 
 from config import get_config
 
-from category_handlers import category_handlers, subcategory
+from bot.handlers.category_handlers import category_handlers, subcategory
 from keyboard import start_keyboard, instruction_keyboard, menu_keyboard, first_categories_keyboard, \
     second_categories_keyboard
-from subcategory_handlers import subcategory_handlers, target_search
+from bot.handlers.subcategory_handlers import subcategory_handlers, target_search
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

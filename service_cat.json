@@ -1,0 +1,81 @@
+{
+  "Обсуждения, встречи, общение": [
+    "category_1.csv"
+  ],
+  "Кино, Видео и ТВ": [
+    "category_2.csv",
+    "category_3.csv"
+  ],
+  "Новости": [
+    "category_4.csv",
+    "category_5.csv",
+    "category_6.csv",
+    "category_7.csv"
+  ],
+  "Музыка": [
+    "category_8.csv"
+  ],
+  "Программы и Дизайн": [
+    "category_9.csv"
+  ],
+  "Обучающее видео": [
+    "category_10.csv"
+  ],
+  "Разное": [
+    "category_11.csv",
+    "category_12.csv",
+    "category_13.csv",
+    "category_14.csv",
+    "category_15.csv",
+    "category_16.csv",
+    "category_17.csv"
+  ],
+  "Сериалы": [
+    "category_18.csv"
+  ],
+  "Игры": [
+    "category_19.csv"
+  ],
+  "Документалистика и юмор": [
+    "category_20.csv",
+    "category_21.csv"
+  ],
+  "Рок-музыка": [
+    "category_22.csv"
+  ],
+  "Электронная музыка": [
+    "category_23.csv"
+  ],
+  "Все по авто и мото": [
+    "category_24.csv"
+  ],
+  "Книги и журналы": [
+    "category_25.csv"
+  ],
+  "Apple": [
+    "category_26.csv"
+  ],
+  "Медицина и здоровье": [
+    "category_27.csv"
+  ],
+  "Спорт": [
+    "category_28.csv"
+  ],
+  "Мобильные устройства": [
+    "category_29.csv",
+    "category_30.csv"
+  ],
+  "Джазовая и Блюзовая музыка": [
+    "category_31.csv",
+    "category_32.csv"
+  ],
+  "Аудиокниги": [
+    "category_33.csv"
+  ],
+  "Обучение иностранным языкам": [
+    "category_34.csv"
+  ],
+  "Популярная музыка": [
+    "category_35.csv"
+  ]
+}

@@ -4,9 +4,9 @@ import json
 import time
 import asyncio
 from dotenv import load_dotenv
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 from tqdm import tqdm
-from torrent_repository import TorrentRepository
+from database.torrent_repository import TorrentRepository
 
 
 class AsyncRutrackerParser:

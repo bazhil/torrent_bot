@@ -1,0 +1,6 @@
+.env
+.venv
+.idea
+logs
+torrent_importer.log
+rutracker-torrents
