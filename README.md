@@ -61,11 +61,8 @@ For this project was user rutracker dump of torrents:
    - Download rutracker dump, set path of folder in .env `TORRENT_FOLDER_PATH=<path>`
    - Run the database setup script:
      ```bash
-     python -m database/async_filling_postgres.py
+     python -m bot/async_filling_postgres.py
      ```
-
-6. Configure the bot:
-   - Add your Telegram bot token to the appropriate bot script (`torrent_bot_on_telebot.py` or `torrent_bot_on_python-telegram-bot.py`).
 
 ### Running the Bot
 
