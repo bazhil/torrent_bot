@@ -1,5 +1,7 @@
 # Torrent Bot
 
+**ATTENCION:** This code is a prototype with minimal functionality.
+
 A Telegram bot for managing and interacting with rutracker.org dump from 2014 year. This bot is built using Python.
 Note, that using information from rutracker.org can be illegal in some countries and don't use it for outlaw activity.
 This is educatable project, which can be used as prototype of something better.
@@ -8,11 +10,11 @@ For this project was user rutracker dump of torrents:
 - https://habr.com/ru/articles/357530/
 - https://rutracker.org/forum/viewtopic.php?t=4824458
 
+**PS: This is my very old pet project, which can be better. But it is not my primary idea and current functionality in not full. If you have any experience in aiogram and telegram bots - you are welcome for made pull requests.**
+
 ## Features
 
 - **Search**: Search torrent information by query
-- **Category and Subcategory Search**: The bot supports search by categories and subcategories for torrents.
-- **Database Integration**: The bot interacts with a PostgreSQL database for storing and retrieving torrent data.
 
 ## Setup
 
@@ -65,26 +67,19 @@ For this project was user rutracker dump of torrents:
 6. Configure the bot:
    - Add your Telegram bot token to the appropriate bot script (`torrent_bot_on_telebot.py` or `torrent_bot_on_python-telegram-bot.py`).
 
-7. Run creation and filling database
-    ```python
-    python -m async_filling_postgres
-    ```
-
 ### Running the Bot
 
 To run the bot, execute one of the following commands based on the library you want to use:
 
-- For `telebot`:
-    ```bash
-    python -m bot/torrent_bot_on_telebot.py
-    ```
-
 - For `python-telegram-bot`:
     ```bash
-    python -m bot/torrent_bot_on_python-telegram-bot.py
+    cd bot
+    python -m main
     ```
 
 ### Docker Deployment
+
+**ATTENCION:** current docker setup is not tested correctly.
 
 To deploy the bot using Docker:
 
