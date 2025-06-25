@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres_db
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - torrent_bot_network
+
+  torrent_bot:
+    build: .
+    container_name: torrent_bot
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - torrents:/app/torrents
+    depends_on:
+      - postgres
+    networks:
+      - torrent_bot_network
+
+volumes:
+  postgres_data:
+  torrents:
+
+networks:
+  torrent_bot_network:
