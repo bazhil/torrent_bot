@@ -1,6 +1,6 @@
 # Torrent Bot
 
-**ATTENCION:** This code is a prototype with minimal functionality.
+**ATTENTION:** This code is a prototype with minimal functionality.
 
 A Telegram bot for managing and interacting with rutracker.org dump from 2014 year. This bot is built using Python.
 Note, that using information from rutracker.org can be illegal in some countries and don't use it for outlaw activity.
@@ -76,7 +76,7 @@ To run the bot, execute one of the following commands based on the library you w
 
 ### Docker Deployment
 
-**ATTENCION:** current docker setup is not tested correctly.
+**ATTENTION:** current docker setup is not tested correctly.
 
 To deploy the bot using Docker:
 
